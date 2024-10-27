@@ -1,7 +1,18 @@
-function App() {
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom";
+import { HomePage } from "./app/home/page";
 
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/">
+      <Route index element={<HomePage />} />
+    </Route>
+  )
+)
+
+function App() {
   return (
-    <div>Hello world</div>
+    <RouterProvider router={router} />
   )
 }
 
