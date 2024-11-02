@@ -24,8 +24,8 @@ export const AuthContext = createContext<AuthContextProps>({
   session: null
 })
 
-const TOKEN_COOKIE = 'sprint-poker:token'
-const SESSION_COOKIE = 'sprint-poker:session'
+const TOKEN_COOKIE = 'sprint-poker.token'
+const SESSION_COOKIE = 'sprint-poker.session'
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { toast } = useToast()
@@ -34,8 +34,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     { [TOKEN_COOKIE]: tokenCookie, [SESSION_COOKIE]: sessionCookie },
     setCookie
   ] = useCookies([TOKEN_COOKIE, SESSION_COOKIE])
-
-  console.log(import.meta.env.VITE_JWT_SECRET!)
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -55,7 +53,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
       const stringSession = JSON.stringify(session)
-
       setCookie(SESSION_COOKIE, stringSession, { path: '/' })
 
       setSession({
@@ -68,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
     } catch (error) {
       const err = isAxiosError(error)
-      if (!err) return
+      if (!err) { console.error(err); return }
       toast({
         description: error.response?.data.message,
         variant: 'destructive',
@@ -85,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (sessionCookie) {
-      const session = JSON.parse(sessionCookie)
+      const session = sessionCookie
       setSession(session)
     }
   }, [sessionCookie])
