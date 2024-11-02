@@ -3,9 +3,8 @@ import { User } from "@/domain/user";
 import { useToast } from "@/hooks/use-toast";
 import api from "@/services/api";
 import { isAxiosError } from "axios";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-
 interface Session {
   token: string
   user: User
@@ -25,19 +24,39 @@ export const AuthContext = createContext<AuthContextProps>({
   session: null
 })
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+const TOKEN_COOKIE = 'sprint-poker:token'
+const SESSION_COOKIE = 'sprint-poker:session'
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { toast } = useToast()
   const [session, setSession] = useState<Session | null>(null)
-  const [, setCookie] = useCookies(['token'])
+  const [
+    { [TOKEN_COOKIE]: tokenCookie, [SESSION_COOKIE]: sessionCookie },
+    setCookie
+  ] = useCookies([TOKEN_COOKIE, SESSION_COOKIE])
+
+  console.log(import.meta.env.VITE_JWT_SECRET!)
 
   const signIn = async (email: string, password: string) => {
     try {
       const response = await api.post<LoginSuccessResponse>('/api/auth/login', { email, password })
 
       if (response.data.token) {
-        setCookie('token', response.data.token, { path: '/' })
+        setCookie(TOKEN_COOKIE, response.data.token, { path: '/' })
         api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
       }
+
+      const session: Session = {
+        token: response.data.token,
+        user: {
+          name: response.data.name,
+          email: response.data.email,
+          id: response.data.userId
+        }
+      }
+      const stringSession = JSON.stringify(session)
+
+      setCookie(SESSION_COOKIE, stringSession, { path: '/' })
 
       setSession({
         token: response.data.token,
@@ -59,9 +78,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signOut = async () => {
     setSession(null)
-    setCookie('token', '', { path: '/' })
+    setCookie(SESSION_COOKIE, '', { path: '/' })
+    setCookie(TOKEN_COOKIE, '', { path: '/' })
     delete api.defaults.headers.common['Authorization']
   }
+
+  useEffect(() => {
+    if (sessionCookie) {
+      const session = JSON.parse(sessionCookie)
+      setSession(session)
+    }
+  }, [sessionCookie])
+
+  useEffect(() => {
+    if (tokenCookie) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${tokenCookie}`
+    }
+  }, [tokenCookie])
 
   return (
     <AuthContext.Provider value={{

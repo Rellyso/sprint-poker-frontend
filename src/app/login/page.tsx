@@ -2,29 +2,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/hooks/use-auth";
 import { useForm } from "@/hooks/use-form";
-import { useToast } from "@/hooks/use-toast";
 import { LoginSchema, loginSchema } from "@/schemas/login";
-import axios, { isAxiosError } from "axios";
 
-export function HomePage() {
-  const { toast } = useToast()
+export function LoginPage() {
+  const { signIn } = useAuth()
   const { register, handleSubmit } = useForm<LoginSchema>({
     schema: loginSchema,
   })
   const handleLogin = async (data: LoginSchema) => {
-    try {
-      const response = await axios.post('http://localhost:4000/api/auth/login', data)
-
-      console.log(response.data)
-    } catch (error) {
-      const err = isAxiosError(error)
-      if (!err) return
-      toast({
-        description: error.response?.data.message,
-        variant: 'destructive',
-      })
-    }
+    await signIn(data.email, data.password)
   }
 
   return (
