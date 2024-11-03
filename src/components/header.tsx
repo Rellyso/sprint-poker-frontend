@@ -12,7 +12,7 @@ export function Header() {
             <span className="text-zinc-900">Sprint</span>Poker
           </div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon">
             <Sun className="h-5 w-5" />
           </Button>
