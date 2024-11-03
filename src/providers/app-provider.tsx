@@ -3,7 +3,7 @@ import { AuthProvider } from './auth-provider';
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   return (
-    <CookiesProvider defaultSetOptions={{ path: '/' }}>
+    <CookiesProvider>
       <AuthProvider>{children}</AuthProvider>
     </CookiesProvider>
   );

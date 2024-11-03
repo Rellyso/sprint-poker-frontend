@@ -5,14 +5,17 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
 import { useForm } from "@/hooks/use-form";
 import { LoginSchema, loginSchema } from "@/schemas/login";
+import { useNavigate } from 'react-router-dom'
 
 export function LoginPage() {
+  const navigate = useNavigate()
   const { signIn } = useAuth()
   const { register, handleSubmit } = useForm<LoginSchema>({
     schema: loginSchema,
   })
   const handleLogin = async (data: LoginSchema) => {
     await signIn(data.email, data.password)
+    navigate('/rooms/test')
   }
 
   return (
