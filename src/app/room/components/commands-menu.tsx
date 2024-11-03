@@ -48,10 +48,10 @@ export function CommandsMenu() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px]">
-            <DropdownMenuItem onClick={() => handleChangeGameType(GameType.fibonacci)} className="text-blue-500">
+            <DropdownMenuItem onClick={() => handleChangeGameType(GameType.fibonacci)}>
               Fibonacci
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleChangeGameType(GameType.decimal)} className="text-blue-500">
+            <DropdownMenuItem onClick={() => handleChangeGameType(GameType.decimal)}>
               Decimal
             </DropdownMenuItem>
           </DropdownMenuContent>
