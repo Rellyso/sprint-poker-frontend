@@ -37,7 +37,7 @@ export function CommandsMenu() {
         >
           <Copy className={copied ? "hidden" : "h-4 w-4"} />
           <Check className={copied ? "h-4 w-4" : "hidden"} />
-          {gameId}
+          <span className="hidden md:inline">{gameId}</span>
         </Button>
 
         <DropdownMenu>
