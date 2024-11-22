@@ -5,17 +5,22 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
 import { useForm } from "@/hooks/use-form";
 import { LoginSchema, loginSchema } from "@/schemas/login";
-import { useNavigate } from 'react-router-dom'
 
 export function LoginPage() {
-  const navigate = useNavigate()
   const { signIn } = useAuth()
   const { register, handleSubmit } = useForm<LoginSchema>({
     schema: loginSchema,
   })
   const handleLogin = async (data: LoginSchema) => {
-    await signIn(data.email, data.password)
-    navigate('/rooms/test')
+    await signIn('credentials', data)
+  }
+
+  const handleGoogleLogin = () => {
+    window.open('http://localhost:4000/api/auth/google', '_self')
+  }
+
+  const handleGithubLogin = () => {
+    window.open('http://localhost:4000/api/auth/github', '_self')
   }
 
   return (
@@ -26,6 +31,10 @@ export function LoginPage() {
           <CardDescription>Entre com sua conta para continuar.</CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="flex flex-col gap-2 items-center">
+            <Button variant="outline" onClick={handleGoogleLogin}>Entrar com Google</Button>
+            <Button variant="outline" onClick={handleGithubLogin}>Entrar com GitHub</Button>
+          </div>
           <form id="login-form" onSubmit={handleSubmit(handleLogin)}>
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">

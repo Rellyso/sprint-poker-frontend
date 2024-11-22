@@ -10,12 +10,18 @@ interface Session {
   user: User
 }
 
+interface Credentials {
+  email: string
+  password: string
+}
+
 export interface AuthContextProps {
   session?: Session | null
   isAuthenticated: boolean
   isLoading: boolean
-  signIn: (email: string, password: string) => Promise<void>
+  signIn: (provider: 'google' | 'github' | 'credentials', options?: Credentials) => Promise<void>
   signOut: () => Promise<void>
+  validateSession: (token: string) => Promise<void>
 }
 
 export const AuthContext = createContext<AuthContextProps>({
@@ -23,7 +29,8 @@ export const AuthContext = createContext<AuthContextProps>({
   signIn: async () => { },
   signOut: async () => { },
   session: null,
-  isLoading: false
+  isLoading: false,
+  validateSession: async () => { }
 })
 
 const TOKEN_COOKIE = 'sprint-poker.token'
@@ -38,7 +45,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setCookie
   ] = useCookies([TOKEN_COOKIE, SESSION_COOKIE])
 
-  const signIn = async (email: string, password: string) => {
+  const signInWithGoogle = async () => { 
+    window.open('http://localhost:4000/api/auth/google', '_self')
+
+  }
+
+  const signInWithGithub = async () => { 
+    window.open('http://localhost:4000/api/auth/github', '_self')
+  }
+
+  const signInWithCredentials = async ({email, password}: Credentials): Promise<Session | undefined> => {
     try {
       const response = await api.post<LoginSuccessResponse>('/api/auth/login', { email, password })
 
@@ -54,26 +70,68 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           id: response.data.userId
         }
       }
-      const stringSession = JSON.stringify(session)
-      setCookie(SESSION_COOKIE, stringSession, { path: '/' })
 
-      setSession({
-        token: response.data.token,
-        user: {
-          name: response.data.name,
-          email: response.data.email,
-          id: response.data.userId
-        }
-      })
+      return session
     } catch (error) {
       setSession(null)
       const err = isAxiosError(error)
-      if (!err) { console.error(err); return }
-      toast({
-        description: error.response?.data.message,
-        variant: 'destructive',
-      })
+      if (err) { 
+        toast({
+          description: error.response?.data.message,
+          variant: 'destructive',
+        })
+      }
     }
+  }
+
+  const signIn = async (provider: 'google' | 'github' | 'credentials', options?: Credentials) => {
+    let session: Session | undefined
+    
+    switch (provider) {
+      case 'google':
+        await signInWithGoogle()
+        break
+      case 'github':
+        await signInWithGithub()
+        break
+      case 'credentials':
+        session = await signInWithCredentials(options as Credentials)
+        break
+    }
+    if (!session) return
+
+    const stringSession = JSON.stringify(session)
+    setCookie(SESSION_COOKIE, stringSession, { path: '/' })
+    
+    setSession(session)
+  }
+  
+  async function validateSession(token: string) {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    
+    try {
+      const response = await api.get<Session>('/api/auth/validate-token')
+      
+      if (response.data) {
+        setSession(response.data)
+      }
+      
+      if (!sessionCookie) {
+        const stringSession = JSON.stringify(response.data)
+        setCookie(SESSION_COOKIE, stringSession, { path: '/' })
+      }
+      
+    } catch (error) {
+      setSession(null)
+      const err = isAxiosError(error)
+      if (err) {
+        toast({
+          description: error.response?.data.message,
+          variant: 'destructive',
+        })
+      }
+    }
+    
   }
 
   const signOut = async () => {
@@ -105,7 +163,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signIn,
       signOut,
       session,
-      isLoading
+      isLoading,
+      validateSession
     }}>
       {children}
     </AuthContext.Provider>
