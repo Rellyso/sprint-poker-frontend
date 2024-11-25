@@ -3,20 +3,20 @@ import { useEffect } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 
 export function LoginSuccessPage() {
-  const { validateSession} = useAuth()
+  const { validateSession } = useAuth()
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const token = params.get('token')
 
-  async function handleSession(){
+  async function handleSession() {
     await validateSession(token!)
-    navigate('/rooms/test')
+    navigate('/rooms/enter')
   }
 
   useEffect(() => {
     handleSession()
   }, [])
-  
+
   return (
     <div className="flex h-screen items-center justify-center">Login Success</div>
   )

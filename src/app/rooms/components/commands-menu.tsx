@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Check, ChevronDown, Copy } from "lucide-react";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 
 enum GameType {
   fibonacci = 'Fibonacci',
@@ -9,16 +10,16 @@ enum GameType {
 }
 
 export function CommandsMenu() {
+  const { roomId } = useParams<{ roomId: string }>()
   const [copied, setCopied] = useState(false)
   const [selectedGameType, setSelectedGameType] = useState<GameType>(GameType.fibonacci)
-  const gameId = "11c1371a035"
 
   const handleChangeGameType = (gameType: GameType) => {
     setSelectedGameType(gameType)
   }
 
   const copyToClipboard = async () => {
-    await navigator.clipboard.writeText(gameId)
+    await navigator.clipboard.writeText(roomId!)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -37,7 +38,7 @@ export function CommandsMenu() {
         >
           <Copy className={copied ? "hidden" : "h-4 w-4"} />
           <Check className={copied ? "h-4 w-4" : "hidden"} />
-          <span className="hidden md:inline">{gameId}</span>
+          <span className="hidden md:inline">{roomId}</span>
         </Button>
 
         <DropdownMenu>

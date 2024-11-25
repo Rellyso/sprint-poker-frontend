@@ -41,20 +41,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null | undefined>(undefined)
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [
-    { [SESSION_COOKIE]: sessionCookie },
+    { [SESSION_COOKIE]: sessionCookie, [TOKEN_COOKIE]: tokenCookie },
     setCookie
   ] = useCookies([TOKEN_COOKIE, SESSION_COOKIE])
 
-  const signInWithGoogle = async () => { 
+  const signInWithGoogle = async () => {
     window.open('http://localhost:4000/api/auth/google', '_self')
 
   }
 
-  const signInWithGithub = async () => { 
+  const signInWithGithub = async () => {
     window.open('http://localhost:4000/api/auth/github', '_self')
   }
 
-  const signInWithCredentials = async ({email, password}: Credentials): Promise<Session | undefined> => {
+  const signInWithCredentials = async ({ email, password }: Credentials): Promise<Session | undefined> => {
     try {
       const response = await api.post<LoginSuccessResponse>('/api/auth/login', { email, password })
 
@@ -75,7 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       setSession(null)
       const err = isAxiosError(error)
-      if (err) { 
+      if (err) {
         toast({
           description: error.response?.data.message,
           variant: 'destructive',
@@ -86,7 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (provider: 'google' | 'github' | 'credentials', options?: Credentials) => {
     let session: Session | undefined
-    
+
     switch (provider) {
       case 'google':
         await signInWithGoogle()
@@ -102,25 +102,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const stringSession = JSON.stringify(session)
     setCookie(SESSION_COOKIE, stringSession, { path: '/' })
-    
+    setCookie(TOKEN_COOKIE, session.token, { path: '/' })
+
     setSession(session)
   }
-  
+
   async function validateSession(token: string) {
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-    
+
     try {
       const response = await api.get<Session>('/api/auth/validate-token')
-      
+
       if (response.data) {
         setSession(response.data)
       }
-      
+
       if (!sessionCookie) {
         const stringSession = JSON.stringify(response.data)
         setCookie(SESSION_COOKIE, stringSession, { path: '/' })
+        setCookie(TOKEN_COOKIE, response.data.token, { path: '/' })
       }
-      
+
     } catch (error) {
       setSession(null)
       const err = isAxiosError(error)
@@ -131,7 +133,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         })
       }
     }
-    
+
   }
 
   const signOut = async () => {
