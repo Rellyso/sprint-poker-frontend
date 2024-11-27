@@ -1,66 +1,87 @@
-import { Header } from "@/components/header";
-import { CommandsMenu } from "./components/commands-menu";
-import { useEffect, useState } from "react";
-import { useSocket } from "@/hooks/use-socket";
-import { useParams } from "react-router-dom";
+import { Header } from '@/components/header'
+import { CommandsMenu } from './components/commands-menu'
+import { useEffect, useState } from 'react'
+import { useSocket } from '@/hooks/use-socket'
+import { useParams } from 'react-router-dom'
+import { ChoiceVoteMenu } from './components/choice-vote-menu'
+import { PlayerVotes } from './components/player-votes'
+import { useAuth } from '@/hooks/use-auth'
 
-interface UserInRoom {
-  userId: string;
-  name: string;
-  email: string;
+export interface Player {
+  userId: string
+  name: string
+  email: string
 }
 
-
 export function RoomPage() {
+  const { session } = useAuth()
+  const userId = session?.user.id
   const socket = useSocket()
   const { roomId } = useParams()
-  const [roomUsers, setRoomUsers] = useState<UserInRoom[]>([]);
+  const [players, setPlayers] = useState<Player[]>([])
 
   useEffect(() => {
     // Listeners de eventos de sala
 
-    if (roomId) {
-      socket.emit('join-room', roomId)
+    if (roomId && userId) {
+      socket.emit('join-room', { userId, roomId })
     }
 
     socket.on('user-joined', (user) => {
       // Lógica de atualização de usuários
-      setRoomUsers(prevUsers => {
+      setPlayers((prevUsers) => {
         // Verifica se usuário já existe
-        const existingUserIndex = prevUsers.findIndex(u => u.userId === user.userId);
+        const existingUserIndex = prevUsers.findIndex(
+          (u) => u.userId === user.userId,
+        )
 
         if (existingUserIndex === -1) {
           // Adiciona novo usuário
-          return [...prevUsers, user];
+          return [...prevUsers, user]
         }
 
         // Se já existe, mantém o array como está
-        return prevUsers;
-      });
-    });
+        return prevUsers
+      })
+    })
 
-    socket.on('room-users', (users) => {
+    socket.on('users-online', (users) => {
       // Atualização completa de usuários
-      setRoomUsers(users);
-    });
+      console.log(users)
+      setPlayers(users)
+    })
 
     return () => {
       // Limpa listeners
-      socket.off('user-joined');
-      socket.off('room-users');
-    };
-  }, []);
+      socket.off('user-joined')
+      socket.off('users-online')
+    }
+  }, [roomId, userId])
 
-  console.log(roomUsers);
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // Envia evento de desconexão
+      socket.emit('leave-room', roomId);
+    };
+
+    // Adiciona listener para antes de fechar a aba
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // Limpa listener ao desmontar componente
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [roomId]);
+
+  console.log(players)
 
   return (
     <div className="flex flex-col h-screen bg-background">
       <Header />
-      <div className="container mx-auto px-4 pt-6">
+      <div className="container space-y-4 mx-auto px-4 pt-6">
         <CommandsMenu />
-        {roomUsers.map((user) => (
-          <div key={user.userId}>{user.name}</div>
-        ))}
+        <ChoiceVoteMenu />
+        <PlayerVotes players={players} />
       </div>
     </div>
   )
