@@ -1,14 +1,22 @@
 export interface IVote {
   userId: string;
-  vote: number;
+  vote: string | null;
 }
+
+export enum GameType {
+  fibonacci = 'Fibonacci',
+  decimal = 'Decimal',
+}
+
 
 export interface Session {
   title: string;
   token: string;
   owner: string;
+  result_revealed: boolean;
   votes: IVote[];
   closed: boolean;
+  game_type: GameType;
 }
 
 export interface SessionCreateResponse {

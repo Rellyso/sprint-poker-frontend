@@ -1,8 +1,5 @@
-import { socket } from "@/services/socket"
-import { useState } from "react"
+import SocketService from "@/services/socket"
 
 export const useSocket = () => {
-  const [socketInstance] = useState(socket())
-
-  return socketInstance
+  return SocketService.getInstance()
 }

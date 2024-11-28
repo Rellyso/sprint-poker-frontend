@@ -41,6 +41,9 @@ export function Header() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => navigate('/rooms/enter')}>
+                Sair da sala
+              </DropdownMenuItem>
               <DropdownMenuItem>
                 <Button variant="destructive" className="w-full" onClick={handleSignOut}>
                   Sair

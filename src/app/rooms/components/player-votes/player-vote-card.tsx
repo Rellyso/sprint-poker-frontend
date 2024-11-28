@@ -1,10 +1,10 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Player } from "@/domain/player"
 import { cn } from "@/lib/utils"
-import { UserInRoom } from "../../page"
 
 interface CardProps {
   reveled?: boolean
-  user: UserInRoom
+  player: Player
 }
 
 const randomPhases = [
@@ -22,10 +22,10 @@ function generateRandomPhase() {
   return randomPhases[Math.floor(Math.random() * randomPhases.length)]
 }
 
-export function PlayerVoteCard({ user, reveled }: CardProps) {
-  const avatarFallback = user.name[0].toLocaleUpperCase()
-  const userVote = '?'
-  const hasVote = reveled
+export function PlayerVoteCard({ player, reveled }: CardProps) {
+  const avatarFallback = player.name[0].toLocaleUpperCase()
+  const playerVote = player.vote
+  const hasVote = player.vote !== null
 
   const cardFrontClasses = cn(
     'absolute inset-0 flex items-center justify-center',
@@ -44,7 +44,6 @@ export function PlayerVoteCard({ user, reveled }: CardProps) {
     'transform-y-0'
   )
 
-
   return (
     <div className={cn(
       'flex flex-col items-center justify-center gap-1'
@@ -59,7 +58,7 @@ export function PlayerVoteCard({ user, reveled }: CardProps) {
             {generateRandomPhase()}
           </span>}
           {reveled && <span className="text-3xl md:text-4xl font-bold">
-            {userVote}
+            {playerVote}
           </span>}
         </div>
         <div className={cardBackClasses}>
@@ -69,7 +68,7 @@ export function PlayerVoteCard({ user, reveled }: CardProps) {
         </div>
       </div>
       <strong className="mt-1 text-sm md:text-base">
-        {user.name}
+        {player.name.split(' ')[0]}
       </strong>
     </div>
   )

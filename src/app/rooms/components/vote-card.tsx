@@ -21,7 +21,7 @@ export function VoteCard({
     <button
       {...props}
       className={cx(
-        'flex flex-col items-center justify-center w-10 h-14 text-2xl font-bold border-2 transition-transform duration-100 ease-out',
+        'flex flex-col items-center justify-center w-10 h-14 md:w-12 md:h-16 text-2xl font-bold border-2 transition-transform duration-100 ease-out',
         isSelected ? 'transform -translate-y-2.5' : '',
         'bg-white text-black border-gray-300',
         isSelected

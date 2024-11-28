@@ -1,22 +1,16 @@
-import { Player } from '../../page'
 import { PlayerVoteCard } from './player-vote-card'
+import { useRoom } from '../../providers/room-provider'
 
-interface PlayerVotesProps {
-  players: Player[]
-}
-
-
-export function PlayerVotes({
-  players
-}: PlayerVotesProps) {
-
+export function PlayerVotes() {
+  const { players, roomInfo } = useRoom()
 
   return (
-    <div className="flex items-center gap-2 pt-8 justify-center">
+    <div className="flex items-center gap-2 md:gap-6 pt-8 justify-center">
       {players.map((player) => (
         <PlayerVoteCard
+          reveled={roomInfo?.result_revealed}
           key={player.userId}
-          user={player}
+          player={player}
         />
       ))}
     </div>
