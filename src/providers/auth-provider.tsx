@@ -1,10 +1,10 @@
-import { LoginSuccessResponse } from "@/domain/login";
-import { User } from "@/domain/user";
-import { useToast } from "@/hooks/use-toast";
-import api from "@/services/api";
-import { isAxiosError } from "axios";
-import { createContext, useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
+import { LoginSuccessResponse } from '@/domain/login'
+import { User } from '@/domain/user'
+import { useToast } from '@/hooks/use-toast'
+import api from '@/services/api'
+import { isAxiosError } from 'axios'
+import { createContext, useEffect, useState } from 'react'
+import { useCookies } from 'react-cookie'
 interface Session {
   token: string
   user: User
@@ -19,18 +19,21 @@ export interface AuthContextProps {
   session?: Session | null
   isAuthenticated: boolean
   isLoading: boolean
-  signIn: (provider: 'google' | 'github' | 'credentials', options?: Credentials) => Promise<void>
+  signIn: (
+    provider: 'google' | 'github' | 'credentials',
+    options?: Credentials
+  ) => Promise<void>
   signOut: () => Promise<void>
   validateSession: (token: string) => Promise<void>
 }
 
 export const AuthContext = createContext<AuthContextProps>({
   isAuthenticated: false,
-  signIn: async () => { },
-  signOut: async () => { },
+  signIn: async () => {},
+  signOut: async () => {},
   session: null,
   isLoading: false,
-  validateSession: async () => { }
+  validateSession: async () => {},
 })
 
 const TOKEN_COOKIE = 'sprint-poker.token'
@@ -40,26 +43,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { toast } = useToast()
   const [session, setSession] = useState<Session | null | undefined>(undefined)
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [
-    { [SESSION_COOKIE]: sessionCookie, [TOKEN_COOKIE]: tokenCookie },
-    setCookie
-  ] = useCookies([TOKEN_COOKIE, SESSION_COOKIE])
+  const [{ [SESSION_COOKIE]: sessionCookie }, setCookie] = useCookies([
+    TOKEN_COOKIE,
+    SESSION_COOKIE,
+  ])
 
   const signInWithGoogle = async () => {
     window.open('http://localhost:4000/api/auth/google', '_self')
-
   }
 
   const signInWithGithub = async () => {
     window.open('http://localhost:4000/api/auth/github', '_self')
   }
 
-  const signInWithCredentials = async ({ email, password }: Credentials): Promise<Session | undefined> => {
+  const signInWithCredentials = async ({
+    email,
+    password,
+  }: Credentials): Promise<Session | undefined> => {
     try {
-      const response = await api.post<LoginSuccessResponse>('/api/auth/login', { email, password })
+      const response = await api.post<LoginSuccessResponse>('/api/auth/login', {
+        email,
+        password,
+      })
 
       if (response.data.token) {
-        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
+        api.defaults.headers.common['Authorization'] =
+          `Bearer ${response.data.token}`
       }
 
       const session: Session = {
@@ -67,8 +76,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user: {
           name: response.data.name,
           email: response.data.email,
-          id: response.data.userId
-        }
+          id: response.data.userId,
+        },
       }
 
       return session
@@ -84,7 +93,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const signIn = async (provider: 'google' | 'github' | 'credentials', options?: Credentials) => {
+  const signIn = async (
+    provider: 'google' | 'github' | 'credentials',
+    options?: Credentials
+  ) => {
     let session: Session | undefined
 
     switch (provider) {
@@ -122,7 +134,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setCookie(SESSION_COOKIE, stringSession, { path: '/' })
         setCookie(TOKEN_COOKIE, response.data.token, { path: '/' })
       }
-
     } catch (error) {
       setSession(null)
       const err = isAxiosError(error)
@@ -133,7 +144,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         })
       }
     }
-
   }
 
   const signOut = async () => {
@@ -155,19 +165,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (sessionCookie) {
-      api.defaults.headers.common['Authorization'] = `Bearer ${sessionCookie.token}`
+      api.defaults.headers.common['Authorization'] =
+        `Bearer ${sessionCookie.token}`
     }
   }, [sessionCookie])
 
   return (
-    <AuthContext.Provider value={{
-      isAuthenticated: session?.user.id !== undefined,
-      signIn,
-      signOut,
-      session,
-      isLoading,
-      validateSession
-    }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated: session?.user.id !== undefined,
+        signIn,
+        signOut,
+        session,
+        isLoading,
+        validateSession,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )
