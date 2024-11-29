@@ -48,12 +48,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     SESSION_COOKIE,
   ])
 
-  const signInWithGoogle = async () => {
-    window.open('http://localhost:4000/api/auth/google', '_self')
+  const signInWithGoogle = () => {
+    window.open(
+      `${import.meta.env.VITE_API_URL}/api/auth/google`,
+      '_self',
+      'noopener,noreferrer'
+    )
   }
 
-  const signInWithGithub = async () => {
-    window.open('http://localhost:4000/api/auth/github', '_self')
+  const signInWithGithub = () => {
+    window.open(
+      `${import.meta.env.VITE_API_URL}/api/auth/github`,
+      '_self',
+      'noopener,noreferrer'
+    )
   }
 
   const signInWithCredentials = async ({
