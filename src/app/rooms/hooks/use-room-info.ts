@@ -1,9 +1,13 @@
-import { Player } from "@/domain/player"
-import { GameType, Session } from "@/domain/session"
-import SocketService from "@/services/socket"
-import { useEffect, useState } from "react"
+import { Player } from '@/domain/player'
+import { GameType, Session } from '@/domain/session'
+import SocketService from '@/services/socket'
+import { useEffect, useState } from 'react'
 
-export function useRoomInfo(socket: SocketService, roomId: string, player?: Player) {
+export function useRoomInfo(
+  socket: SocketService,
+  roomId: string,
+  player?: Player
+) {
   const [roomInfo, setRoomInfo] = useState<Session | undefined>()
 
   const submitVote = (receivedVote: string) => {
@@ -27,7 +31,6 @@ export function useRoomInfo(socket: SocketService, roomId: string, player?: Play
   useEffect(() => {
     if (roomId) {
       socket.on('/room/info', (info) => {
-        console.log(info)
         if (info !== undefined) {
           setRoomInfo(info)
         }
@@ -37,7 +40,6 @@ export function useRoomInfo(socket: SocketService, roomId: string, player?: Play
     return () => {
       socket.off('/room/info')
     }
-
   }, [socket])
 
   return {

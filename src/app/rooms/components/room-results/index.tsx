@@ -21,13 +21,14 @@ export function RoomResults() {
 
   const { betterAcceptance, isCoffeeTime } = calculateBestAcceptanceVote(votes)
 
+  const isBetterAcceptance = betterAcceptance === votesAverage
+  const isConfettiTime = (areVotesRevealed && isBetterAcceptance) || false
+
   return (
     <div className="flex object-center self-center flex-row gap-4 fixed bottom-0">
-      {/* Lottie Animation */}
-      <ConfettiFireworks trigger={areVotesRevealed || false} />
+      <ConfettiFireworks trigger={isConfettiTime} />
 
-      {/* Suggested Choice */}
-      {betterAcceptance !== '' && (
+      {betterAcceptance && (
         <div
           className={`
             ${areVotesRevealed ? 'flex' : 'hidden'} 
@@ -42,7 +43,6 @@ export function RoomResults() {
         </div>
       )}
 
-      {/* Average */}
       {!!votesAverage && (
         <div
           className={`

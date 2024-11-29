@@ -1,6 +1,6 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Player } from "@/domain/player"
-import { cn } from "@/lib/utils"
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Player } from '@/domain/player'
+import { cn } from '@/lib/utils'
 
 interface CardProps {
   reveled?: boolean
@@ -18,8 +18,20 @@ const randomPhases = [
   '89 + 55 😎',
 ]
 
-function generateRandomPhase() {
-  return randomPhases[Math.floor(Math.random() * randomPhases.length)]
+function generateRandomPhase(): string {
+  if (!randomPhases || randomPhases.length === 0) {
+    throw new Error('randomPhases is empty')
+  }
+
+  const randomIndex =
+    crypto.getRandomValues(new Uint32Array(1))[0] % randomPhases.length
+  const randomPhase = randomPhases[randomIndex]
+
+  if (randomPhase === undefined || randomPhase === null) {
+    throw new Error('randomPhase is null or undefined')
+  }
+
+  return randomPhase
 }
 
 export function PlayerVoteCard({ player, reveled }: CardProps) {
@@ -39,27 +51,30 @@ export function PlayerVoteCard({ player, reveled }: CardProps) {
     'backface-hidden bg-white dark:bg-gray-800',
     'border-2 border-gray-300 dark:border-gray-600 rounded-lg',
     {
-      'border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20': hasVote
+      'border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20':
+        hasVote,
     },
     'transform-y-0'
   )
 
   return (
-    <div className={cn(
-      'flex flex-col items-center justify-center gap-1'
-    )}>
-      <div className={cn(
-        'relative transition-transform duration-700 w-14 h-20 md:w-16 md:h-24',
-        'transform-3d preserve-3d',
-        reveled ? 'transform-y-180' : '',
-      )}>
+    <div className={cn('flex flex-col items-center justify-center gap-1')}>
+      <div
+        className={cn(
+          'relative transition-transform duration-700 w-14 h-20 md:w-16 md:h-24',
+          'transform-3d preserve-3d',
+          reveled ? 'transform-y-180' : ''
+        )}
+      >
         <div className={cardFrontClasses}>
-          {!reveled && <span className="text-xs text-gray-500 text-center p-2 hidden">
-            {generateRandomPhase()}
-          </span>}
-          {reveled && <span className="text-3xl md:text-4xl font-bold">
-            {playerVote}
-          </span>}
+          {!reveled && (
+            <span className="text-xs text-gray-500 text-center p-2 hidden">
+              {generateRandomPhase()}
+            </span>
+          )}
+          {reveled && (
+            <span className="text-3xl md:text-4xl font-bold">{playerVote}</span>
+          )}
         </div>
         <div className={cardBackClasses}>
           <Avatar className="h-6 w-6">
