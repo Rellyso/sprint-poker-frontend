@@ -109,10 +109,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     switch (provider) {
       case 'google':
-        await signInWithGoogle()
+        signInWithGoogle()
         break
       case 'github':
-        await signInWithGithub()
+        signInWithGithub()
         break
       case 'credentials':
         session = await signInWithCredentials(options as Credentials)

@@ -3,6 +3,7 @@ import { calculateAverageVotes } from '@/utils/calculate-average-votes'
 import { useRoom } from '../../providers/room-provider'
 import { calculateBestAcceptanceVote } from '@/utils/calculate-best-acceptance-vote'
 import { ConfettiFireworks } from './confetti-fireworks'
+import { cx } from 'class-variance-authority'
 
 export function RoomResults() {
   const { roomInfo } = useRoom()
@@ -21,44 +22,44 @@ export function RoomResults() {
 
   const { betterAcceptance, isCoffeeTime } = calculateBestAcceptanceVote(votes)
 
-  const isBetterAcceptance = betterAcceptance === votesAverage
+  const isBetterAcceptance = Number(betterAcceptance) === votesAverage
   const isConfettiTime = (areVotesRevealed && isBetterAcceptance) || false
+  console.log({ areVotesRevealed, betterAcceptance, votesAverage })
 
   return (
-    <div className="flex object-center self-center flex-row gap-4 fixed bottom-0">
+    <div className="flex object-center self-center justify-center flex-row gap-4 fixed bottom-0 right-0 w-full">
       <ConfettiFireworks trigger={isConfettiTime} />
 
       {betterAcceptance && (
         <div
-          className={`
-            ${areVotesRevealed ? 'flex' : 'hidden'} 
-            items-center justify-center 
-            mb-5 gap-2 
-            animate-slide-in-up 
-            animate-delay-200
-          `}
+          className={cx(
+            areVotesRevealed
+              ? 'animate-in slide-in-from-bottom'
+              : 'animate-out slide-out-to-bottom hidden',
+            'flex mb-5 gap-2 flex-col items-center justify-center',
+            'duration-300 '
+          )}
         >
-          <h2 className="text-2xl font-bold">Escolha sugerida:</h2>
           <VoteCard>{betterAcceptance}</VoteCard>
+          <span className="text-lg font-semibold">Melhor escolha</span>
         </div>
       )}
 
       {!!votesAverage && (
         <div
-          className={`
-            ${areVotesRevealed ? 'flex' : 'hidden'} 
-            items-center justify-center 
-            mb-5 gap-2 
-            animate-slide-in-up 
-            animate-delay-200
-          `}
+          className={cx(
+            areVotesRevealed
+              ? 'animate-in slide-in-from-bottom'
+              : 'animate-out slide-out-to-bottom hidden',
+            'flex mb-5 gap-2 flex-col items-center justify-center',
+            'duration-300'
+          )}
         >
-          <h2 className="text-2xl font-bold">Média:</h2>
-          <p className="text-2xl font-bold">{formattedAverageVotes}</p>
+          <VoteCard>{formattedAverageVotes}</VoteCard>
+          <h3 className="text-lg font-semibold">Média</h3>
         </div>
       )}
 
-      {/* Coffee Time */}
       {isCoffeeTime && (
         <div
           className={`

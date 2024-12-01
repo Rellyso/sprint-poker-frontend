@@ -1,9 +1,15 @@
-import { ChevronDown, Sun } from "lucide-react";
-import { Button } from "./ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "./ui/avatar";
-import { useAuth } from "@/hooks/use-auth";
-import { useNavigate } from "react-router-dom";
+import { ChevronDown, Sun } from 'lucide-react'
+import { Button } from './ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu'
+import { Avatar, AvatarFallback } from './ui/avatar'
+import { useAuth } from '@/hooks/use-auth'
+import { useNavigate } from 'react-router-dom'
+import { AppLogo } from './app-logo'
 
 export function Header() {
   const navigate = useNavigate()
@@ -20,11 +26,7 @@ export function Header() {
   return (
     <header className="border-b">
       <div className="container flex h-16 items-center justify-between px-4 mx-auto">
-        <div className="flex items-center gap-2">
-          <div className="text-zinc-600 text-2xl font-bold">
-            <span className="text-zinc-900">Sprint</span>Poker
-          </div>
-        </div>
+        <AppLogo />
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon">
             <Sun className="h-5 w-5" />
@@ -44,10 +46,11 @@ export function Header() {
               <DropdownMenuItem onClick={() => navigate('/rooms/enter')}>
                 Sair da sala
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Button variant="destructive" className="w-full" onClick={handleSignOut}>
-                  Sair
-                </Button>
+              <DropdownMenuItem
+                className="text-red-600 focus:bg-red-200 focus:text-red-600"
+                onClick={handleSignOut}
+              >
+                Desconectar
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
