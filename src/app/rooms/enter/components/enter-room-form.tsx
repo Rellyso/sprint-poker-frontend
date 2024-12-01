@@ -1,14 +1,14 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Session } from "@/domain/session";
-import { useForm } from "@/hooks/use-form";
-import { useToast } from "@/hooks/use-toast";
-import { EnterRoomSchema, enterRoomSchema } from "@/schemas/enter-room";
-import api from "@/services/api";
-import { isAxiosError } from "axios";
-import { MoveRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Session } from '@/domain/session'
+import { useForm } from '@/hooks/use-form'
+import { useToast } from '@/hooks/use-toast'
+import { EnterRoomSchema, enterRoomSchema } from '@/schemas/enter-room'
+import api from '@/services/api'
+import { isAxiosError } from 'axios'
+import { MoveRight } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 interface SessionExistsResponse {
   message: string
@@ -26,8 +26,9 @@ export function EnterRoomForm() {
 
   const handleEnterRoom = async (data: EnterRoomSchema) => {
     try {
-
-      const response = await api.get<SessionExistsResponse>(`/api/session/exists/${data.token}`)
+      const response = await api.get<SessionExistsResponse>(
+        `/api/sessions/exists/${data.token}`
+      )
 
       if (!response.data.exists) {
         toast({
@@ -55,8 +56,16 @@ export function EnterRoomForm() {
         <div className="flex flex-col space-y-1.5">
           <Label htmlFor="token">Código da sala</Label>
           <div className="flex items-center gap-2">
-            <Input id="token" type="text" placeholder="FD7SXASDSD" maxLength={10} {...register('token')} />
-            <Button type="submit"><MoveRight /></Button>
+            <Input
+              id="token"
+              type="text"
+              placeholder="FD7SXASDSD"
+              maxLength={10}
+              {...register('token')}
+            />
+            <Button type="submit">
+              <MoveRight />
+            </Button>
           </div>
         </div>
       </div>

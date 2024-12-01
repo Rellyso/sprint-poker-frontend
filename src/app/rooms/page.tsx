@@ -4,6 +4,7 @@ import { PlayerVotes } from './components/player-votes'
 import { TopBarRoomMenu } from './components/top-bar-room-menu'
 import { RoomProvider } from './providers/room-provider'
 import { RoomResults } from './components/room-results'
+import { StoriesMenu } from './components/stories-menu'
 
 export function RoomPage() {
   return (
@@ -13,6 +14,7 @@ export function RoomPage() {
         <div className="container space-y-4 mx-auto px-4 pt-6">
           <TopBarRoomMenu />
           <ChoiceVoteMenu />
+          <StoriesMenu />
           <PlayerVotes />
           <RoomResults />
         </div>

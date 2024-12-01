@@ -21,7 +21,7 @@ export function CreateRoomForm() {
   const handleCreateRoom = async (data: CreateRoomSchema) => {
     try {
       const response = await api.post<SessionCreateResponse>(
-        `/api/session/create`,
+        `/api/sessions/create`,
         data
       )
 

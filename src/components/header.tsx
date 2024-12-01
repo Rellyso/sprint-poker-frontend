@@ -8,12 +8,14 @@ import {
 } from './ui/dropdown-menu'
 import { Avatar, AvatarFallback } from './ui/avatar'
 import { useAuth } from '@/hooks/use-auth'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { AppLogo } from './app-logo'
 
 export function Header() {
   const navigate = useNavigate()
   const { session, signOut } = useAuth()
+  const { roomId } = useParams()
+  const isInRoom = !!roomId
 
   const userName = session?.user.name
   const avatarFallback = session?.user.name[0].toLocaleUpperCase()
@@ -43,9 +45,11 @@ export function Header() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => navigate('/rooms/enter')}>
-                Sair da sala
-              </DropdownMenuItem>
+              {isInRoom && (
+                <DropdownMenuItem onClick={() => navigate('/rooms/enter')}>
+                  Sair da sala
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 className="text-red-600 focus:bg-red-200 focus:text-red-600"
                 onClick={handleSignOut}
