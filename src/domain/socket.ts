@@ -1,11 +1,13 @@
 import { Player } from "./player";
 import { GameType, Session } from "./session";
+import { Story } from "./story";
 
 export interface ServerToClientEvents {
   // Eventos de sala
   '/room/players': (players?: Player[]) => void;
   '/room/revealed': (revealed?: boolean) => void;
   '/room/info': (roomData: Session) => void;
+  '/room/story/updated': (story: Story) => void;
   // Eventos de jogador
   '/room/player/voted': (vote: string | null) => void;
   // Eventos de erro
@@ -39,6 +41,11 @@ export interface ClientToServerEvents {
   }) => void;
   '/room/deselect-story': (data: {
     roomId: string;
+  }) => void;
+  '/room/story/submit-score': (data: {
+    roomId: string;
+    storyId: string;
+    score: string;
   }) => void;
 
   // Eventos de jogador

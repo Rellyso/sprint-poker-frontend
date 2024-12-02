@@ -4,7 +4,7 @@ export interface Story {
   name: string
   link: string
   sessionToken: string
-  score: number | null
+  score: string | null
   createdAt: Date
   updatedAt: Date
 }

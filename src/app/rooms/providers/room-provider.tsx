@@ -7,26 +7,31 @@ import { useRoomPlayers } from '../hooks/use-room-players'
 import { GameType, Session } from '@/domain/session'
 import { useRoomInfo } from '../hooks/use-room-info'
 import { useRoomStory } from '../hooks/use-room-story'
+import { Story } from '@/domain/story'
 
 interface RoomContextProps {
   players: Player[]
   player?: Player
   roomInfo?: Session
+  selectedStory?: Story
   changeGameType: (gameType: GameType) => void
   changeVotesAreRevealed: (votesIsRevealed: boolean) => void
   selectStory: (storyId: string) => void
   deselectStory: (storyId: string) => void
   submitVote: (vote: string) => void
+  submitScore: (score: string) => void
 }
 
 const RoomContext = createContext<RoomContextProps>({
   players: [],
   player: undefined,
+  selectedStory: undefined,
   changeGameType: () => {},
   changeVotesAreRevealed: () => {},
   submitVote: () => {},
   selectStory: () => {},
   deselectStory: () => {},
+  submitScore: () => {},
 })
 
 export function RoomProvider({ children }: { children: React.ReactNode }) {
@@ -42,7 +47,8 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
   const { submitVote, changeVotesAreRevealed, roomInfo, changeGameType } =
     useRoomInfo(socket, roomId as string, player)
 
-  const { selectStory, deselectStory } = useRoomStory(socket, roomId as string)
+  const { selectStory, deselectStory, selectedStory, submitScore } =
+    useRoomStory(socket, roomId as string, roomInfo?.selected_story)
 
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -69,6 +75,8 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
         changeGameType,
         selectStory,
         deselectStory,
+        selectedStory,
+        submitScore,
       }}
     >
       {children}
