@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Player } from '@/domain/player'
 import { cn } from '@/lib/utils'
+import { getRandomNumber } from '@/utils/get-random-number'
 
 interface CardProps {
   reveled?: boolean
@@ -23,8 +24,7 @@ function generateRandomPhase(): string {
     throw new Error('randomPhases is empty')
   }
 
-  const randomIndex =
-    crypto.getRandomValues(new Uint32Array(1))[0] % randomPhases.length
+  const randomIndex = getRandomNumber() % randomPhases.length
   const randomPhase = randomPhases[randomIndex]
 
   if (randomPhase === undefined || randomPhase === null) {
