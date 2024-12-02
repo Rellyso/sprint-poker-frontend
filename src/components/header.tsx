@@ -37,7 +37,6 @@ export function Header() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="gap-2">
                 <Avatar className="h-6 w-6">
-                  {/* <AvatarImage src="/placeholder.svg" alt="User" /> */}
                   <AvatarFallback>{avatarFallback}</AvatarFallback>
                 </Avatar>
                 {userName}
