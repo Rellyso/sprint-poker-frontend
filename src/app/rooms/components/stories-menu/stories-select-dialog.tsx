@@ -16,7 +16,8 @@ import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Story } from '@/domain/story'
 import { Badge } from '@/components/ui/badge'
-import { ArrowRight, MoveRight, Trash } from 'lucide-react'
+import { Plus, Trash } from 'lucide-react'
+import { useRoom } from '../../providers/room-provider'
 
 interface StoriesSelectDialogProps {
   isOpen: boolean
@@ -30,8 +31,9 @@ export function StoriesSelectDialog({
   const [isOpenCreateForm, setIsOpenCreateForm] = useState(false)
   const { toast } = useToast()
   const { roomId } = useParams()
+  const { selectStory, roomInfo } = useRoom()
 
-  const { data: stories } = useQuery({
+  const { data: stories, refetch: refetchStories } = useQuery({
     queryKey: ['stories', roomId],
     queryFn: async () => {
       const response = await api.get<Story[]>(`/api/sessions/${roomId}/stories`)
@@ -39,8 +41,6 @@ export function StoriesSelectDialog({
       return response.data
     },
   })
-
-  const showEmptyStoriesMessage = stories?.length === 0 && !isOpenCreateForm
 
   const handleCreateStory = async (data: CreateStorySchema) => {
     try {
@@ -59,6 +59,7 @@ export function StoriesSelectDialog({
         description: `História ${response.data.code} criada com sucesso`,
         variant: 'default',
       })
+      refetchStories()
     } catch (err) {
       const isAxiosErr = isAxiosError(err)
       if (isAxiosErr) {
@@ -71,8 +72,30 @@ export function StoriesSelectDialog({
   }
 
   const handleSelectStory = (story: Story) => {
-    console.log(story)
+    selectStory(story._id)
     onDismiss()
+  }
+
+  const handleDeleteStory = async (story: Story) => {
+    try {
+      await api.delete(`/api/stories/${story._id}`)
+      if (roomInfo?.selected_story === story._id) {
+        selectStory('')
+      }
+      toast({
+        description: `História ${story.code} deletada com sucesso`,
+        variant: 'default',
+      })
+      refetchStories()
+    } catch (err) {
+      const isAxiosErr = isAxiosError(err)
+      if (isAxiosErr) {
+        toast({
+          description: err.response?.data.message,
+          variant: 'destructive',
+        })
+      }
+    }
   }
 
   return (
@@ -84,25 +107,27 @@ export function StoriesSelectDialog({
             Adicione suas histórias para salvar a pontuação escolhida!
           </DialogDescription>
         </DialogHeader>
-        {showEmptyStoriesMessage && (
+        <div className="flex">
           <Button
-            variant="link"
+            size="sm"
             onClick={() => setIsOpenCreateForm(!isOpenCreateForm)}
           >
-            Nenhuma história adicionada, clique aqui para adicionar uma agora
+            <Plus /> Adicionar
           </Button>
-        )}
+        </div>
 
-        {isOpenCreateForm && <CreateStoryForm onSubmit={handleCreateStory} />}
+        {isOpenCreateForm && (
+          <CreateStoryForm
+            isOpen={isOpenCreateForm}
+            onDismiss={() => setIsOpenCreateForm(false)}
+            onSubmit={handleCreateStory}
+          />
+        )}
 
         {stories && stories.length > 0 && (
           <div className="flex flex-col gap-2 w-full">
             {stories.map((story) => (
-              <div
-                key={story._id}
-                onClick={() => handleSelectStory(story)}
-                className="flex gap-2"
-              >
+              <div key={story._id} className="flex gap-2">
                 <p
                   onClick={() => handleSelectStory(story)}
                   className="hover:bg-muted cursor-pointer items-center border border-border rounded-md w-full py-2 px-2 flex gap-2 text-sm text-foreground"
@@ -120,6 +145,7 @@ export function StoriesSelectDialog({
                     variant="ghost"
                     size="icon"
                     className="hover:bg-red-200"
+                    onClick={() => handleDeleteStory(story)}
                   >
                     <Trash className="w-4 h-4 text-red-600" />
                   </Button>

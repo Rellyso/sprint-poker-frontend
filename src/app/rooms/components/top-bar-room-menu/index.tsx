@@ -24,7 +24,6 @@ export function TopBarRoomMenu() {
         {isRevealed ? 'Esconder' : 'Revelar'}
       </Button>
       <Button variant="secondary">Resetar</Button>
-      <Check className="h-5 w-5 text-green-500" />
 
       <div className="ml-auto flex items-center gap-4">
         <Button variant="outline" className="gap-2" onClick={copyToClipboard}>

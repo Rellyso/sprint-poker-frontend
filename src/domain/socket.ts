@@ -33,6 +33,13 @@ export interface ClientToServerEvents {
     roomId: string;
     vote: string | null;
   }) => void;
+  '/room/select-story': (data: {
+    storyId: string;
+    roomId: string;
+  }) => void;
+  '/room/deselect-story': (data: {
+    roomId: string;
+  }) => void;
 
   // Eventos de jogador
   'player:setName': (name: string) => void;

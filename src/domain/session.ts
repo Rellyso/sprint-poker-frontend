@@ -17,6 +17,7 @@ export interface Session {
   votes: IVote[];
   closed: boolean;
   game_type: GameType;
+  selected_story: string | null;
 }
 
 export interface SessionCreateResponse {

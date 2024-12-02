@@ -24,7 +24,6 @@ export function RoomResults() {
 
   const isBetterAcceptance = Number(betterAcceptance) === votesAverage
   const isConfettiTime = (areVotesRevealed && isBetterAcceptance) || false
-  console.log({ areVotesRevealed, betterAcceptance, votesAverage })
 
   return (
     <div className="flex object-center self-center justify-center flex-row gap-4 fixed bottom-0 right-0 w-full">

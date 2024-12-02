@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom'
 import { useRoomPlayers } from '../hooks/use-room-players'
 import { GameType, Session } from '@/domain/session'
 import { useRoomInfo } from '../hooks/use-room-info'
+import { useRoomStory } from '../hooks/use-room-story'
 
 interface RoomContextProps {
   players: Player[]
@@ -13,6 +14,8 @@ interface RoomContextProps {
   roomInfo?: Session
   changeGameType: (gameType: GameType) => void
   changeVotesAreRevealed: (votesIsRevealed: boolean) => void
+  selectStory: (storyId: string) => void
+  deselectStory: (storyId: string) => void
   submitVote: (vote: string) => void
 }
 
@@ -22,6 +25,8 @@ const RoomContext = createContext<RoomContextProps>({
   changeGameType: () => {},
   changeVotesAreRevealed: () => {},
   submitVote: () => {},
+  selectStory: () => {},
+  deselectStory: () => {},
 })
 
 export function RoomProvider({ children }: { children: React.ReactNode }) {
@@ -36,6 +41,8 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
   )
   const { submitVote, changeVotesAreRevealed, roomInfo, changeGameType } =
     useRoomInfo(socket, roomId as string, player)
+
+  const { selectStory, deselectStory } = useRoomStory(socket, roomId as string)
 
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -60,6 +67,8 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
         submitVote,
         changeVotesAreRevealed,
         changeGameType,
+        selectStory,
+        deselectStory,
       }}
     >
       {children}
