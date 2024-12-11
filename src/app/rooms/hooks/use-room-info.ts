@@ -10,6 +10,12 @@ export function useRoomInfo(
 ) {
   const [roomInfo, setRoomInfo] = useState<Session | undefined>()
 
+  const resetVotes = () => {
+    if (!player) return
+
+    socket.emit('/room/votes/reset', { roomId: roomId as string })
+  }
+
   const submitVote = (receivedVote: string) => {
     if (!player) return
 
@@ -47,5 +53,6 @@ export function useRoomInfo(
     roomInfo,
     changeVotesAreRevealed,
     changeGameType,
+    resetVotes,
   }
 }

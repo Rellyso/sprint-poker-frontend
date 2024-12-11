@@ -16,6 +16,7 @@ interface RoomContextProps {
   selectedStory?: Story
   changeGameType: (gameType: GameType) => void
   changeVotesAreRevealed: (votesIsRevealed: boolean) => void
+  resetVotes: () => void
   selectStory: (storyId: string) => void
   deselectStory: (storyId: string) => void
   submitVote: (vote: string) => void
@@ -29,6 +30,7 @@ const RoomContext = createContext<RoomContextProps>({
   changeGameType: () => {},
   changeVotesAreRevealed: () => {},
   submitVote: () => {},
+  resetVotes: () => {},
   selectStory: () => {},
   deselectStory: () => {},
   submitScore: () => {},
@@ -44,8 +46,13 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
     roomId as string,
     userId as string
   )
-  const { submitVote, changeVotesAreRevealed, roomInfo, changeGameType } =
-    useRoomInfo(socket, roomId as string, player)
+  const {
+    submitVote,
+    changeVotesAreRevealed,
+    roomInfo,
+    changeGameType,
+    resetVotes,
+  } = useRoomInfo(socket, roomId as string, player)
 
   const { selectStory, deselectStory, selectedStory, submitScore } =
     useRoomStory(socket, roomId as string, roomInfo?.selected_story)
@@ -77,6 +84,7 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
         deselectStory,
         selectedStory,
         submitScore,
+        resetVotes,
       }}
     >
       {children}

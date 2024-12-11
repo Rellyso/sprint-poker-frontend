@@ -8,7 +8,7 @@ import { GameTypeSelector } from './game-type-selector'
 
 export function TopBarRoomMenu() {
   const { roomId } = useParams<{ roomId: string }>()
-  const { roomInfo, changeVotesAreRevealed } = useRoom()
+  const { roomInfo, changeVotesAreRevealed, resetVotes } = useRoom()
   const isRevealed = roomInfo?.result_revealed
   const [copied, setCopied] = useState(false)
 
@@ -23,7 +23,9 @@ export function TopBarRoomMenu() {
       <Button onClick={() => changeVotesAreRevealed(!isRevealed)}>
         {isRevealed ? 'Esconder' : 'Revelar'}
       </Button>
-      <Button variant="secondary">Resetar</Button>
+      <Button variant="secondary" onClick={resetVotes}>
+        Resetar
+      </Button>
 
       <div className="ml-auto flex items-center gap-4">
         <Button variant="outline" className="gap-2" onClick={copyToClipboard}>
